@@ -3,9 +3,11 @@
 
 using namespace std;
 
-int letterSearch(char c, int index, char* wordle);
-int incorrectTally(char c, char* wordle);
-int correctTally(char c, int index, char* array, char* wordle);
+//int letterSearch(char c, int index, char* wordle);
+bool charIsCorrect(char c, int index, char* wordle);
+int yellowCount(char c, int index, char* wordle);
+int charCount(char c, char* array);
+int greenCount(char c, int index, char* array, char* wordle);
 
 int main() 
 {
@@ -17,21 +19,15 @@ int main()
   {
     cout << "enter guess" << endl;
     cin.getline(guess, 100);
-    char usedSoFar[100];
-    int incorrectPossitionsRemaining = 0;
-    int yellowTally;
     for(int i = 0; i < strlen(guess); i++)
     {
-      usedSoFar[i] = guess[i];
-      incorrectPossitionsRemaining = correctTally(guess[i], i, guess, wordle) - yellowTally;
-      if(letterSearch(guess[i], i, wordle) == 2)
+      if(charIsCorrect(guess[i], i, wordle) == true)
       {
         cout << "\e[0;32m" << guess[i]; //green
       }
-      else if(letterSearch(guess[i], i, wordle) == 1 && letterTally(guess[i], usedSoFar) <= letterTally(guess[i], wordle) && letterTally(guess[i], usedSoFar) <= correctTally(guess[i], i, guess, wordle))  
+      else if((correctTally(guess[i], i, guess, wordle) || incorrectTally(guess[i], i, wordle)) < totalTally(guess[i], wordle))  
       {
         cout << "\e[0;33m" << guess[i]; //yellow
-        yellowTally++;
       }
       else
       {
@@ -43,7 +39,15 @@ int main()
   cout << "you win!" << endl;
 }
 
-int letterSearch(char c, int index, char* wordle)
+bool charIsCorrect(char c, int index, char* wordle)
+{
+  if(wordle[index] == c)
+  {
+    return true; //correct letter in correct place
+  }
+}
+
+/*int letterSearch(char c, int index, char* wordle)
 {
   if(wordle[index] == c)
   {
@@ -57,9 +61,37 @@ int letterSearch(char c, int index, char* wordle)
     }
   }
   return 0; //does not contain letter
+}*/
+
+//returns the amount of a given char from GUESS that EXIST in the worlde but do not share the INDEX   
+int yellowCount(char c, int index, char* wordle)
+{
+  int total = 0;
+  for(int i = 0; i < strlen(wordle); i++)
+  {
+    if(wordle[i] == c && i != index)
+    {
+      total++;
+    }
+  }
+  return total;
 }
 
-int incorrectTally(char c, char* array)
+//returns the amount of chars that are in the right place and 
+int greenCount(char c, int index, char* array, char* wordle)
+{
+  int total = 0;
+  for(int i = 0; i < strlen(wordle); i++)
+  {
+    if(charIsCorrect(c, i, wordle) == true)
+    {
+      total++;
+    }
+  }
+  return total;
+}
+
+int totalTally(char c, char* array)
 {
   int total = 0;
   for(int i = 0; i < strlen(array); i++)
@@ -72,17 +104,5 @@ int incorrectTally(char c, char* array)
   return total;
 }
 
-int correctTally(char c, int index, char* array, char* wordle)
-{
-  int total = 0;
-  for(int i = 0; i < strlen(wordle); i++)
-  {
-    if(letterSearch(c, i, wordle) == 2)
-    {
-      total++;
-    }
-  }
-  return total;
-}
 
-
+//yellow allowed if: amount of greens 
