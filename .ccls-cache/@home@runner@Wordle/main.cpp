@@ -4,7 +4,8 @@
 using namespace std;
 
 int letterSearch(char c, int index, char* wordle);
-int letterTally(char c, char* wordle);
+int incorrectTally(char c, char* wordle);
+int correctTally(char c, int index, char* array, char* wordle);
 
 int main() 
 {
@@ -17,16 +18,20 @@ int main()
     cout << "enter guess" << endl;
     cin.getline(guess, 100);
     char usedSoFar[100];
+    int incorrectPossitionsRemaining = 0;
+    int yellowTally;
     for(int i = 0; i < strlen(guess); i++)
     {
       usedSoFar[i] = guess[i];
+      incorrectPossitionsRemaining = correctTally(guess[i], i, guess, wordle) - yellowTally;
       if(letterSearch(guess[i], i, wordle) == 2)
       {
         cout << "\e[0;32m" << guess[i]; //green
       }
-      else if(letterSearch(guess[i], i, wordle) == 1 && letterTally(guess[i], usedSoFar) <= letterTally(guess[i], wordle))  
+      else if(letterSearch(guess[i], i, wordle) == 1 && letterTally(guess[i], usedSoFar) <= letterTally(guess[i], wordle) && letterTally(guess[i], usedSoFar) <= correctTally(guess[i], i, guess, wordle))  
       {
         cout << "\e[0;33m" << guess[i]; //yellow
+        yellowTally++;
       }
       else
       {
@@ -54,7 +59,7 @@ int letterSearch(char c, int index, char* wordle)
   return 0; //does not contain letter
 }
 
-int letterTally(char c, char* array)
+int incorrectTally(char c, char* array)
 {
   int total = 0;
   for(int i = 0; i < strlen(array); i++)
@@ -66,4 +71,18 @@ int letterTally(char c, char* array)
   }
   return total;
 }
+
+int correctTally(char c, int index, char* array, char* wordle)
+{
+  int total = 0;
+  for(int i = 0; i < strlen(wordle); i++)
+  {
+    if(letterSearch(c, i, wordle) == 2)
+    {
+      total++;
+    }
+  }
+  return total;
+}
+
 
