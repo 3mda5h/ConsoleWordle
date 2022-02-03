@@ -10,12 +10,9 @@ struct Guess
   int colors[100]; //2 = green, 1 = yellow, 0 = white
 };
 
-//int letterSearch(char c, int index, char* wordle);
 bool charIsCorrect(char c, int index, char* wordle);
-int yellowCount(char c, int index, char* wordle);
 int charCount(char* array, char c);
-int usedCharCount(Guess* guess, char c)
-int greenCount(char c, int index, char* array, char* wordle);
+int usedCharCount(Guess* guess, char c);
 void printGuess(Guess* guess);
 
 int main() 
@@ -31,8 +28,24 @@ int main()
     while(strcmp(guess, wordle) != 0)
     {
       cout << "----------------" << endl;
-      cout << "Guess: ";
-      cin.getline(guess, 100);
+      bool validGuess = false;
+      while(validGuess == false)
+      {
+        cout << "Guess: ";
+        cin.getline(guess, 100);
+        if(strlen(guess) > strlen(wordle))
+        {
+          cout << "Too long!" << endl;
+        }
+        else if(strlen(guess) < strlen(wordle))
+        {
+          cout << "Too short!" << endl;
+        }
+        else
+        {
+          validGuess = true;
+        }
+      }
       cout << "----------------" << endl;
       Guess* newGuess = new Guess();
       strcpy(newGuess->chars, guess);
@@ -49,14 +62,23 @@ int main()
           newGuess->colors[i] = 0;
         }
       }
-      //set any remaining letters to yellow
+      //set any yellows
       for(int i = 0; i < strlen(guess); i++)
       {
+        //for debugging:
+        //cout << "number of " << guess[i] << " that are green or yellow: " << usedCharCount(newGuess, guess[i]) << endl; 
+        //cout << "number of " << guess[i] <<  " in wordle: " << charCount(wordle, guess[i]) << endl;
         if(newGuess->colors[i] != 2 && usedCharCount(newGuess, guess[i]) < charCount(wordle, guess[i]))
         {
           newGuess->colors[i] = 1;
         }
       }
+      //for debugging:
+      for(int i = 0; i < strlen(wordle); i++)
+      {
+        cout << " " << (char)toupper(wordle[i]);
+      }
+      cout << endl;
       for(int i = 0; i < guesses.size(); i++)
       {
         printGuess(guesses[i]);
@@ -75,11 +97,12 @@ int main()
   }
 }
 
+//wordle matches given char at same index 
 bool charIsCorrect(char c, int index, char* wordle)
 {
   if(wordle[index] == c)
   {
-    return true; //correct letter in correct place
+    return true; 
   }
   return false;
 }
@@ -104,57 +127,13 @@ void printGuess(Guess* guess)
   cout << "\e[0;37m" << endl;
 }
 
-/*int letterSearch(char c, int index, char* wordle)
-{
-  if(wordle[index] == c)
-  {
-    return 2; //correct letter in correct place
-  }
-  for(int i = 0; i < strlen(wordle); i++)
-  {
-    if(wordle[i] == c)
-    {
-      return 1; //contains letter but not in right place
-    }
-  }
-  return 0; //does not contain letter
-}*/
-
-//returns the amount of a given char from GUESS that EXIST in the worlde but do not share the INDEX   
-int yellowCount(char c, int index, char* wordle)
-{
-  int total = 0;
-  for(int i = 0; i < strlen(wordle); i++)
-  {
-    if(wordle[i] == c && i != index)
-    {
-      total++;
-    }
-  }
-  return total;
-}
-
-//returns the amount of chars that are in the right place and 
-int greenCount(char c, int index, char* array, char* wordle)
-{
-  int total = 0;
-  for(int i = 0; i < strlen(wordle); i++)
-  {
-    if(charIsCorrect(c, i, wordle) == true)
-    {
-      total++;
-    }
-  }
-  return total;
-}
-
 //returns amount of a certain character in the guess that is either green or yellow
 int usedCharCount(Guess* guess, char c)
 {
   int total = 0;
   for(int i = 0; i < strlen(guess->chars); i++)
   {
-    if(guess->colors[i] != 0) 
+    if(guess->chars[i] == c && guess->colors[i] != 0) 
     {
       total++;
     }
@@ -175,8 +154,3 @@ int charCount(char* array, char c)
   }
   return total;
 }
-
-
-
-
-//yellow allowed if: amount of greens 
