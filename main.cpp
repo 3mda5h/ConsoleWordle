@@ -1,3 +1,4 @@
+//last edited 2/3/22
 #include <iostream>
 #include <cstring>
 #include <vector>
@@ -12,7 +13,7 @@ struct Guess
 
 bool charIsCorrect(char c, int index, char* wordle);
 int charCount(char* array, char c);
-int usedCharCount(Guess* guess, char c);
+int coloredCharCount(Guess* guess, char c);
 void printGuess(Guess* guess);
 
 int main() 
@@ -66,19 +67,19 @@ int main()
       for(int i = 0; i < strlen(guess); i++)
       {
         //for debugging:
-        //cout << "number of " << guess[i] << " that are green or yellow: " << usedCharCount(newGuess, guess[i]) << endl; 
-        //cout << "number of " << guess[i] <<  " in wordle: " << charCount(wordle, guess[i]) << endl;
-        if(newGuess->colors[i] != 2 && usedCharCount(newGuess, guess[i]) < charCount(wordle, guess[i]))
+        /*cout << "number of " << guess[i] << " that are green or yellow: " << usedCharCount(newGuess, guess[i]) << endl; 
+        cout << "number of " << guess[i] <<  " in wordle: " << charCount(wordle, guess[i]) << endl;*/
+        if(newGuess->colors[i] != 2 && coloredCharCount(newGuess, guess[i]) < charCount(wordle, guess[i])) //if char is not green and the amount of yellow/green ones of this char currently in guess is less than the amount of this char in wordle
         {
           newGuess->colors[i] = 1;
         }
       }
       //for debugging:
-      for(int i = 0; i < strlen(wordle); i++)
+      /*for(int i = 0; i < strlen(wordle); i++)
       {
         cout << " " << (char)toupper(wordle[i]);
       }
-      cout << endl;
+      cout << endl;*/
       for(int i = 0; i < guesses.size(); i++)
       {
         printGuess(guesses[i]);
@@ -128,7 +129,7 @@ void printGuess(Guess* guess)
 }
 
 //returns amount of a certain character in the guess that is either green or yellow
-int usedCharCount(Guess* guess, char c)
+int coloredCharCount(Guess* guess, char c)
 {
   int total = 0;
   for(int i = 0; i < strlen(guess->chars); i++)
