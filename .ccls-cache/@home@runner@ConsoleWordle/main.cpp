@@ -27,12 +27,16 @@ int main()
   if(file.is_open())
   {
     int i = 0;
-    while(file.good())
+    while(file)
     {
-      file >> dictonary.at(i); 
+      string word;
+      while (file >> word)
+      {
+        dictonary.emplace(i, word.c_str());
+        i++;
+      }
     }
   }
-  
   char wordle[100];
   char input[100];
   vector<Guess*>guesses;
