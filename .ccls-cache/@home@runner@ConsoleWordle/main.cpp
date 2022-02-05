@@ -22,6 +22,7 @@ void numbers(int wordlen);
 
 int main() 
 {
+  //setting up the dictonary
   vector<const char*>dictonary;
   ifstream file("popular.txt");
   string line;
@@ -31,11 +32,14 @@ int main()
   }
   while (getline(file, line))
   {
-    dictonary.push_back(line.c_str());
+    //cout << line << endl;
+    char c[100];
+    strcpy(c, line.c_str());
+    dictonary.push_back(c);
   }
   cout << dictonary.size() << endl;
-  cout << dictonary[100] << endl;  
-  cout << dictonary[10000] << endl;
+  cout << dictonary[1] << endl;  
+  cout << dictonary[2] << endl;
   char wordle[100];
   char input[100];
   vector<Guess*>guesses;
