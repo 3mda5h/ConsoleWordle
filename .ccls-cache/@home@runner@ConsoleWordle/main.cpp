@@ -22,21 +22,20 @@ void numbers(int wordlen);
 
 int main() 
 {
-  map<int, char*>dictonary;
+  vector<const char*>dictonary;
   ifstream file("popular.txt");
-  if(file.is_open())
+  string line;
+  if(!file.is_open())
   {
-    int i = 0;
-    while(file)
-    {
-      string word;
-      while (file >> word)
-      {
-        dictonary.emplace(i, word.c_str());
-        i++;
-      }
-    }
+    cout << "Could not open file" << endl;
   }
+  while (getline(file, line))
+  {
+    dictonary.push_back(line.c_str());
+  }
+  cout << dictonary.size() << endl;
+  cout << dictonary[100] << endl;  
+  cout << dictonary[10000] << endl;
   char wordle[100];
   char input[100];
   vector<Guess*>guesses;
@@ -46,12 +45,12 @@ int main()
   {
     setWordLength(wordlen);
     int i = 1;
-    while(strlen(dictonary.at(i)) != wordlen)
+    while(strlen(dictonary[i]) != wordlen)
     {
       srand(time(NULL));
-      i = rand()%6 + 1;
+      i = rand()%dictonary.size() + 1;
     }
-    strcpy(wordle, dictonary.at(i));
+    strcpy(wordle, dictonary[i]);
     cout << "wordle is: " << wordle << endl;
     //cout << "Enter the wordle: ";
     //cin.getline(wordle, 100);
