@@ -4,6 +4,8 @@
 #include <vector>
 #include <map>
 #include <fstream>
+#include <string>
+#include <algorithm>
 
 using namespace std;
 
@@ -19,14 +21,15 @@ int coloredCharCount(Guess* guess, char c);
 void printGuess(Guess* guess);
 void setWordLength(int &wordlen);
 void numbers(int wordlen);
-vector<const char*> createDictonary(const char* fileName);
+vector<char*> createDictonary(const char* fileName);
+bool dictonaryContains(vector<char*>&dictonary, char* word);
 
 int main() 
 {
   //setting up the dictonarys
-  vector<const char*>commonWords = createDictonary("popular.txt");
-  vector<const char*>allWords = createDictonary("words.txt");
-
+  vector<char*>commonWords = createDictonary("popular.txt");
+  vector<char*>allWords = createDictonary("words.txt");
+  vector<char*>test = createDictonary("test.txt");
 
   char wordle[100];
   char input[100];
@@ -36,7 +39,7 @@ int main()
   while(playing == true)
   {
     setWordLength(wordlen);
-    cout << "finding word..." << endl;
+    cout << "Finding word..." << endl;
     int i = 1;
     while(strlen(commonWords[i]) != wordlen) //keep randomly going through dictonary until word with desired length is found
     {
@@ -65,6 +68,10 @@ int main()
         {
           cout << "Too short!" << endl;
         }
+        else if(dictonaryContains(allWords, input) == false)
+        {
+          cout << "Not in the dictonary." << endl;
+        }
         else
         {
           validGuess = true;
@@ -89,9 +96,6 @@ int main()
       //set any yellows
       for(int i = 0; i < strlen(input); i++)
       {
-        //for debugging:
-        /*cout << "number of " << guess[i] << " that are green or yellow: " << usedCharCount(newGuess, guess[i]) << endl; 
-        cout << "number of " << guess[i] <<  " in wordle: " << charCount(wordle, guess[i]) << endl;*/
         if(newGuess->colors[i] != 2 && coloredCharCount(newGuess, input[i]) < charCount(wordle, input[i])) //if char is not green and the amount of yellow/green ones of this char currently in guess is less than the amount of this char in wordle
         {
           newGuess->colors[i] = 1;
@@ -115,16 +119,17 @@ int main()
     cout << "Play again? (y/n)" << endl;
     cout << "> ";
     cin.getline(input, 100);
-    if(strcmp(input, "n") == 0)
+    if(strcmp(input, "n") == 0 || strcmp(input, "no") == 0)
     {
       playing = false;
     }   
   }
+  cout << "Thanks for playing!" << endl;
 }
 
-vector<const char*> createDictonary(const char* fileName)
+vector<char*> createDictonary(const char* fileName)
 {
-  vector<const char*>dictonary;
+  vector<char*>dictonary;
   ifstream file(fileName);
   string line;
   if(!file.is_open())
@@ -134,7 +139,7 @@ vector<const char*> createDictonary(const char* fileName)
   while (getline(file, line))
   {
     char* c = new char[100];
-    //cout << line << endl;
+    line.erase(remove(line.begin(), line.end(), '\r'), line.end()); //remove \r from end of string
     strcpy(c, line.c_str());
     dictonary.push_back(c);
   }
@@ -167,6 +172,18 @@ void numbers(int wordlen)
     cout << i;
   }
   cout << "--" << endl;
+}
+
+bool dictonaryContains(vector<char*>&dictonary, char* word)
+{
+  for(int i = 0; i < dictonary.size(); i++)
+  {
+    if(strcmp(dictonary[i], word) == 0)
+    {
+      return true;
+    }
+  }
+  return false;
 }
 
 //wordle matches given char at same index 
