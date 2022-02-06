@@ -19,27 +19,15 @@ int coloredCharCount(Guess* guess, char c);
 void printGuess(Guess* guess);
 void setWordLength(int &wordlen);
 void numbers(int wordlen);
+vector<const char*> createDictonary(const char* fileName);
 
 int main() 
 {
-  //setting up the dictonary
-  vector<const char*>dictonary;
-  ifstream file("popular.txt");
-  string line;
-  if(!file.is_open())
-  {
-    cout << "Could not open file" << endl;
-  }
-  while (getline(file, line))
-  {
-    //cout << line << endl;
-    char c[100];
-    strcpy(c, line.c_str());
-    dictonary.push_back(c);
-  }
-  cout << dictonary.size() << endl;
-  cout << dictonary[1] << endl;  
-  cout << dictonary[2] << endl;
+  //setting up the dictonarys
+  vector<const char*>commonWords = createDictonary("popular.txt");
+  vector<const char*>allWords = createDictonary("words.txt");
+
+
   char wordle[100];
   char input[100];
   vector<Guess*>guesses;
@@ -48,23 +36,25 @@ int main()
   while(playing == true)
   {
     setWordLength(wordlen);
+    cout << "finding word..." << endl;
     int i = 1;
-    while(strlen(dictonary[i]) != wordlen)
+    while(strlen(commonWords[i]) != wordlen) //keep randomly going through dictonary until word with desired length is found
     {
       srand(time(NULL));
-      i = rand()%dictonary.size() + 1;
+      i = rand()%(commonWords.size() - 1);
     }
-    strcpy(wordle, dictonary[i]);
-    cout << "wordle is: " << wordle << endl;
+    strcpy(wordle, commonWords[i]); 
+    //debugging:
+    //cout << "wordle is: " << wordle << endl;
     //cout << "Enter the wordle: ";
     //cin.getline(wordle, 100);
     while(strcmp(input, wordle) != 0)
     {
       bool validGuess = false;
-      while(validGuess == false)
+      while(validGuess == false) //keep prompting user for guess until it is correct length
       {
         cout << "-------";
-        numbers(wordlen);
+        numbers(wordlen); //prints numbers 1 - length of wordle, serves as a guide to show user how long the word that they are inputing is and how long it needs to be
         cout << "Guess: ";
         cin.getline(input, 100);
         if(strlen(input) > strlen(wordle))
@@ -118,10 +108,10 @@ int main()
         printGuess(guesses[i]);
       }
     }
-    guesses.clear();
     cout << "-----------------" << endl;
     cout << "You win!" << endl;
     cout << "Total guesses: " << guesses.size() << endl;
+    guesses.clear();
     cout << "Play again? (y/n)" << endl;
     cout << "> ";
     cin.getline(input, 100);
@@ -132,11 +122,29 @@ int main()
   }
 }
 
+vector<const char*> createDictonary(const char* fileName)
+{
+  vector<const char*>dictonary;
+  ifstream file(fileName);
+  string line;
+  if(!file.is_open())
+  {
+    cout << "Could not open file" << endl;
+  }
+  while (getline(file, line))
+  {
+    char* c = new char[100];
+    //cout << line << endl;
+    strcpy(c, line.c_str());
+    dictonary.push_back(c);
+  }
+  return dictonary;
+}
+
 void setWordLength(int &wordlen)
 {
   char input[100];
-  bool validInput = false;
-  while(validInput == false)
+  while(true == true)
   {
     cout << "Enter word length: ";
     cin.getline(input, 100);
@@ -146,8 +154,8 @@ void setWordLength(int &wordlen)
     }
     else
     {
-      validInput = true;
       wordlen = atoi(input);
+      return;
     }
   }
 }
